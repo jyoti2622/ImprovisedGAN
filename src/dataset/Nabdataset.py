@@ -5,6 +5,7 @@ from sklearn import preprocessing
 import numpy as np
 import torch
 import json
+from pathlib import Path
 
 class NabDataset(Dataset,):
     
@@ -71,7 +72,8 @@ class NabDataset(Dataset,):
         ano_spans = j_label[key]
         self.ano_span_count = len(ano_spans)
         print("data_folder_path", data_folder_path)
-        all_files = glob.glob(str.join(data_folder_path,"/*.csv"))
+    
+        all_files = glob.glob(str(Path.joinpath(data_folder_path, "*.csv")))
 
         dfs=[]
         for filename in all_files:
