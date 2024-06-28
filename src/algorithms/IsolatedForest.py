@@ -8,7 +8,9 @@ import torch.backends.cudnn as cudnn
 import torch.optim as optim
 from torch.autograd import Variable
 import datetime
-from src.model.modelIsolatedForest import IsolatedForest
+
+
+from src.model.modelIsolatedForestv1 import IsolatedForestModel
 from src.utils.losses import Wasserstein
 import torch.nn.init as init
 from src.utils.util import *

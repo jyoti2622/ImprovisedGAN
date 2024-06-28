@@ -1,32 +1,31 @@
-# Implement Isoltaed Forest Algorithm in Python in for NAB Dataset. The implementation pattern can be similar to LSTM AutoEncoder. Create belows files with implemntation IsolatedForest.py under algorithm folder,modelIsolatedForest.py under model folder and IsolatedForest Nab.ipynb under root path.
 import torch
-import torch.nn as nn 
-from torch.utils.data import Dataset
-import pandas as pd
-import numpy as np
-import torch.backends.cudnn as cudnn
-import torch.optim as optim
-from torch.autograd import Variable
-import datetime
-from src.utils.losses import Wasserstein
-import torch.nn.init as init
-from src.utils.util import *
-from collections import OrderedDict
-from src.utils.tf_dtw import SoftDTW
 from sklearn.ensemble import IsolationForest
+
+import torch.nn as nn
+
 
 class IsolatedForest(nn.Module):
     
-    def __init__(self,n_estimators=100, contamination=0.1):
+    def __init__(self, n_features, device=None):
         super(IsolatedForest, self).__init__()
-        self.model = IsolationForest(n_estimators=n_estimators, contamination=contamination)
-        
-    def forward(self, x):
-        return self.model.decision_function(x)
-    
-    def predict(self, x):
-        return self.model.predict(x)
-    
-    def fit(self, x):
-        return self.model.fit(x)
-    
+        self.n_features = n_features
+        self.device = device
+        self.isoforest = IsolationForest(n_estimators=100, contamination=0.1)
+
+    def forward(self, input):
+        input = input.view(-1, self.n_features)
+        self.isoforest.fit(input.detach().cpu().numpy())
+        scores = self.isoforest.decision_function(input.detach().cpu().numpy())
+        scores = torch.tensor(scores).to(self.device)
+        return scores
+
+
+if __name__ == "__main__":
+    # Example usage
+    n_features = 10
+    input = torch.randn(32, 100, n_features)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    model = IsolatedForest(n_features, device)
+    scores = model(input.to(device))
+    print(scores)

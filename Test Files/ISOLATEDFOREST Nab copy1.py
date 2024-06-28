@@ -19,9 +19,8 @@ print(data.isnull().sum())
 
 # Generate synthetic ground truth labels
 # Assume anomalies occur when the value is beyond a certain threshold
-# Find the optimal threshold value
-threshold = data['value'].quantile(0.95)
-print("Optimal threshold:", threshold)
+threshold = data['value'].mean() + 2 * data['value'].std()
+print("threshold :", threshold)
 data['true_label'] = data['value'].apply(lambda x: 1 if x > threshold else 0)
 
 # Implement the Isolation Forest algorithm
